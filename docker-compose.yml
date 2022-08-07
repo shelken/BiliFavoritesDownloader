@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  bili-fav-down:
+    image: shelken/bili-fav-download
+    container_name: bili-fav-download
+    volumes: 
+      - ./biliDown:/app/video
+    environment:
+      - TELE_BOT_TOKEN='@'
+      - TELE_CHAT_ID='@'
+      - RSS_URL='rssurl'
+    restart: on-failure

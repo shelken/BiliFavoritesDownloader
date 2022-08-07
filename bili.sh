@@ -1,16 +1,16 @@
 #!/bin/bash
 you=/usr/local/bin/you-get
 #telegram参数
-telegram_bot_token=""
-telegram_chat_id=""
+telegram_bot_token=$TELE_BOT_TOKEN
+telegram_chat_id=$TELE_CHAT_ID
 #RSS 地址
-rssURL=""
+rssURL=$RSS_URL
 #脚本存放地址
-scriptLocation="/root/bili/"
+scriptLocation="/app/"
 #视频存放地址
-videoLocation="/root/Bilibili/"
+videoLocation="/app/video/"
 #邮件地址
-mailAddress=""
+# mailAddress=""
 
 #抓取rss更新
 content=$(wget $rssURL -q -O -)
@@ -117,11 +117,11 @@ if [ "$pubdate" != "$olddate" ] && [ "$result" != "" ] && [ "$result6" = "" ]; t
                 fi
                 #xml转ass && 获取下载完的视频文件信息
                 for file in "$videoLocation$name"/*; do
-                    if [ "${file##*.}" = "xml" ]; then
-                        "${scriptLocation}"DanmakuFactory -o "${file%%.cmt.xml*}".ass -i "$file"
+                    # if [ "${file##*.}" = "xml" ]; then
+                        # "${scriptLocation}"DanmakuFactory -o "${file%%.cmt.xml*}".ass -i "$file"
                         #删除源文件
                         #rm "$file"
-                    elif [ "${file##*.}" = "mp4" ] || [ "${file##*.}" = "flv" ] || [ "${file##*.}" = "mkv" ]; then
+                    if [ "${file##*.}" = "mp4" ] || [ "${file##*.}" = "flv" ] || [ "${file##*.}" = "mkv" ]; then
                         videoname=${file#*"$name"\/}
                         videostat=$(du -h "$file")
                         videosize=${videostat%%\/*}
@@ -134,8 +134,8 @@ if [ "$pubdate" != "$olddate" ] && [ "$result" != "" ] && [ "$result6" = "" ]; t
                 #echo "$videomessage" | mail -s "BFD：下载完成" $mailAddress
                 curl -s -X POST "https://api.telegram.org/bot$telegram_bot_token/sendMessage" -d chat_id=$telegram_chat_id -d parse_mode=html -d text="<b>BFD：下载完成</b>%0A%0A$videomessage"
                 #上传至OneDrive 百度云
-                /usr/bin/rclone copy "$videoLocation$name" OneDrive:
-                /usr/local/bin/BaiduPCS-Go upload "$videoLocation$name" /
+                # /usr/bin/rclone copy "$videoLocation$name" OneDrive:
+                # /usr/local/bin/BaiduPCS-Go upload "$videoLocation$name" /
                 #发送通知
                 #echo "$title" | mail -s "BFD：上传完成" $mailAddress #邮件方式
                 curl -s -X POST "https://api.telegram.org/bot$telegram_bot_token/sendMessage" -d chat_id=$telegram_chat_id -d parse_mode=html -d text="<b>BFD：上传完成</b>%0A%0A$title"
